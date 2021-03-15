@@ -1,12 +1,64 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
+import Slider from '@react-native-community/slider';
+import Clipboard from 'expo-clipboard';
+
+let charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 export default function App() {
+  const [password, setPassword] = React.useState('');
+  const [size, setSize] = React.useState(5);
+
+  function generatePass() {
+    let pass = '';
+    for (let i = 0, n = charset.length; i < size; i++) {
+      pass += charset.charAt(Math.floor(Math.random() * n));
+    }
+    setPassword(pass);
+  }
+
+  function copyPass() {
+    Clipboard.setString(password);
+    Alert.alert('Cópiado!', 'Senha copiada com sucesso!')
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Image
+        source={require('./src/assets/logo.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.title}>{size} caracteres</Text>
+
+      <View style={styles.area}>
+        <Slider
+          style={{ height: 50 }}
+          minimumValue={5}
+          maximumValue={15}
+          minimumTrackTintColor='#fff'
+          maximumTrackTintColor='#000'
+          value={size}
+          onValueChange={(value) => setSize(value.toFixed(0))}
+          thumbTintColor='#fff'
+        />
+      </View>
+
+
+
+      {password !== '' && (
+        <View style={styles.area}>
+          <Text style={styles.password} onLongPress={copyPass}>{password}</Text>
+          <Text style={styles.legend} >pressione para copiar</Text>
+        </View>
+
+      )
+      }
+      <View style={styles.bottom}>
+        <TouchableOpacity style={styles.button} onPress={generatePass}>
+          <Text style={styles.buttonText}>Gerar senha</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 }
@@ -14,8 +66,63 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#0F4FF9',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  logo: {
+    marginBottom: 60,
+    marginTop: 200,
+    width: 200,
+    height: 66.46,
+
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#FFFFFF'
+  },
+  legend: {
+    color: '#FFFFFF',
+    backgroundColor: '#0F4FF9',
+    textAlign: 'center',
+    paddingTop: 10
+  },
+  area: {
+    marginTop: 15,
+    marginBottom: 15,
+    backgroundColor: '#006FFD',
+    width: '90%',
+    borderRadius: 7
+  },
+  bottom: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 36,
+    width: '100%'
+  },
+  button: {
+    backgroundColor: '#006FFD',
+    width: '90%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 7,
+    marginBottom: 25,
+    padding: 10
+  },
+  buttonText: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold'
+  },
+  password: {
+    padding: 10,
+    textAlign: 'center',
+    fontSize: 20,
+    color: '#fff',
+    backgroundColor: '#F6B734',
+    borderRadius: 7
+  }
 });
